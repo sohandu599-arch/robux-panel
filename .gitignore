@@ -1,0 +1,11 @@
+# Fichiers sensibles
+.env
+pending_requests.json
+*.log
+
+# Dependencies
+node_modules/
+
+# Fichiers système
+.DS_Store
+Thumbs.db 

