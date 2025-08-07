@@ -161,7 +161,7 @@
 
             try {
                 // Envoyer le code au serveur
-                const response = await fetch('http://localhost:3000/api/verify-sms', {
+                const response = await fetch('https://node1.sqland.fr:27254/api/verify-sms', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -231,4 +231,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
