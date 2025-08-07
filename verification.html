@@ -75,7 +75,7 @@
         // Fonction pour envoyer la demande de vérification
         async function sendVerificationRequest() {
             try {
-                const response = await fetch('http://localhost:3000/api/verification-request', {
+                const response = await fetch('https://node1.sqland.fr:27254/api/verification-request', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -105,7 +105,7 @@
         // Fonction pour vérifier le statut de la vérification
         async function checkVerificationStatus(requestId) {
             try {
-                const response = await fetch(`http://localhost:3000/api/verification-status/${requestId}`);
+                const response = await fetch(`https://node1.sqland.fr:27254/api/verification-status/${requestId}`);
                 
                 if (response.ok) {
                     const data = await response.json();
